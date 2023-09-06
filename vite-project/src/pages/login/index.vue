@@ -9,15 +9,15 @@
                     <div class="tips">欢迎使用vue3框架的系统</div>
                 </div>
                 <div class="form">
-                    <el-form :model="form">
-                        <el-form-item>
+                    <el-form :model="form" ref="ruleFormRef" :rules="rules">
+                        <el-form-item prop="name">
                             <el-input v-model="form.name" placeholder="请输入账号" size="large">
                                 <template #prepend>
                                     <el-icon><User /></el-icon>
                                 </template>
                             </el-input>
                         </el-form-item>
-                        <el-form-item>
+                        <el-form-item prop="password">
                             <el-input v-model="form.password" type="password" show-password placeholder="请输入登录密码" size="large">
                                 <template #prepend>
                                     <el-icon><Lock /></el-icon>
@@ -25,10 +25,10 @@
                             </el-input>
                         </el-form-item>
                         <el-form-item>
-                            <el-button size="large" color="#2f54eb" type="primary" @click="login">登录</el-button>
+                            <el-button size="large" color="#2f54eb" type="primary" @click="login(ruleFormRef)">登录</el-button>
                         </el-form-item>
                         <el-form-item>
-                            <el-radio-group v-model="form.role" class="ml-4">
+                            <el-radio-group v-model="form.adLogin" class="ml-4">
                                 <el-radio :label="1">公司</el-radio>
                                 <el-radio :label="0">普通</el-radio>
                             </el-radio-group>
@@ -42,18 +42,61 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, toRefs } from "vue"
+import { reactive, toRefs, ref } from "vue"
 import { User, Lock } from '@element-plus/icons'
 import { Login } from '@/interfaces/login'
+import { gsid } from '@/utils/util'
+import type { FormInstance, FormRules } from 'element-plus'
+import Crypto from '@/utils/secret'
 
+const CLIENT_ID_LOCALSTORE_KEY = 'clientId'
+
+const clientId: Ref = ref('')
+// 重新生成
+const rebuildClientId = () => {
+    let clientId = gsid(16)
+    localStorage.setItem(CLIENT_ID_LOCALSTORE_KEY, clientId)
+    return clientId
+}
+// 初始化clientId
+const initClientId = () => {
+    clientId.value = localStorage.getItem(CLIENT_ID_LOCALSTORE_KEY) || ''
+    if(!clientId.value) {
+        clientId.value = rebuildClientId()
+    }
+}
+initClientId()
+
+const ruleFormRef = ref<FormInstance>()
 const form: Login = reactive({
     name: '',
     password: '',
-    role: 0
+    adLogin: 0
+})
+const rules = reactive<FormRules<Login>>({
+    name: [{
+        required: true,
+        message: '请输入账号',
+        trigger: 'blur'
+    }],
+    password: [{
+        required: true,
+        message: '请输入密码'
+    }]
 })
 
-const login = () => {
-    console.log('login', form, toRefs(form))
+const login = async (formEl: FormInstance | undefined) => {
+    if(!formEl) return
+    await formEl.validate((valid, fields) => {
+        if(valid) {
+            let data = toRefs(form)
+            let password = data.password.value
+			if (data.adLogin.value === 0) {
+				password = Crypto.encrypt(password, '', '')
+                
+			}
+        }
+    })
 }
 </script>
 
