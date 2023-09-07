@@ -44,10 +44,11 @@
 <script setup lang="ts">
 import { reactive, toRefs, ref } from "vue"
 import { User, Lock } from '@element-plus/icons'
-import { Login } from '@/interfaces/login'
+import { LoginForm, LoginParam } from '@/interfaces/login'
 import { gsid } from '@/utils/util'
 import type { FormInstance, FormRules } from 'element-plus'
 import Crypto from '@/utils/secret'
+import { userStore } from '@/store/user'
 
 const CLIENT_ID_LOCALSTORE_KEY = 'clientId'
 
@@ -68,12 +69,12 @@ const initClientId = () => {
 initClientId()
 
 const ruleFormRef = ref<FormInstance>()
-const form: Login = reactive({
+const form: LoginForm = reactive({
     name: '',
     password: '',
     adLogin: 0
 })
-const rules = reactive<FormRules<Login>>({
+const rules = reactive<FormRules<LoginForm>>({
     name: [{
         required: true,
         message: '请输入账号',
@@ -90,10 +91,25 @@ const login = async (formEl: FormInstance | undefined) => {
     await formEl.validate((valid, fields) => {
         if(valid) {
             let data = toRefs(form)
+            const secretKey = 'MINGDUREALTECHCO' // 16位
             let password = data.password.value
 			if (data.adLogin.value === 0) {
-				password = Crypto.encrypt(password, '', '')
-                
+				password = Crypto.encrypt(password, secretKey, secretKey)
+                let param: LoginParam = {
+                    account: data.name.value,
+					password: password,
+					adLogin: data.adLogin.value,
+					key: secretKey,
+					// source 登录源 0 => PC
+					source: 0,
+					// 客户端身份
+					identification: clientId.value,
+					// 图形验证码
+					kaptcha: '',
+					// 短信码
+					verificationCode: ''
+                }
+                userStore().handleLogin(param)
 			}
         }
     })

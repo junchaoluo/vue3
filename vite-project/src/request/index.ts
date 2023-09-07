@@ -9,13 +9,15 @@ const vsersionEln: string = localStorage.getItem('VERSION_ELN') || ''
 const SUCCESS_CODE: number = 0
 let isResrLogin: boolean = true
 
-const service = axios.create({
+const request = axios.create({
     timeout: 6000,
     withCredentials: false,
     baseURL: baseURL
 })
 
-service.interceptors.request.use(config => {
+export const baseUlr = 'http://localhost:7000'
+
+request.interceptors.request.use(config => {
     if(token) {
         config.headers['Authorization'] = token
         config.headers['Version'] = vsersionEln
@@ -27,7 +29,7 @@ service.interceptors.request.use(config => {
     }
 )
 
-service.interceptors.response.use(
+request.interceptors.response.use(
     response => {
         if (!response.data && response.status === 200) {
             return response
@@ -79,3 +81,5 @@ service.interceptors.response.use(
         return Promise.reject(error)
     }
 )
+
+export default request
