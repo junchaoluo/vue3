@@ -1,29 +1,26 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 import Layout from '@/layout/index.vue'
-import Vue from 'vue'
+import { userStore } from '@/store/user'
+import { menuRoutes } from './menu'
 
-export const routes: Array<RouteConfig> = [
+export const routes: Array<RouteRecordRaw> = [
     {
-        path: '/login',
-		name: 'login',
-        component: () => import('@/pages/login/index.vue')
+      path: '/',
+      component: Layout,
+      children: [
+        {
+          path: '',
+          name: '首页',
+          component: () => import('@/pages/home/index.vue')
+        },
+        ...menuRoutes
+      ]
     },
     {
-        path: '/home',
-        name: 'home',
-        redirect: '/home/index',
-        component: Layout,
-        children: [
-          {
-            path: 'index',
-            name: 'homeIndex',
-            meta: {
-              title: '首页'
-            },
-            component: () => import('@/pages/home/index.vue')
-          }
-        ]
-      },
+        path: '/login',
+		    name: '登录',
+        component: () => import('@/pages/login/index.vue')
+    },
 ]
 
 const router = createRouter({
@@ -32,8 +29,17 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-    console.log(to, from, next)
-    next()
+    let token = userStore().token
+    if(token) {
+      next()
+    }else{
+      if(to.path !== '/login') {
+        userStore().handleLogOut()
+        next('/login')
+      }else{
+        next()
+      }
+    }
 })
 
 export default router

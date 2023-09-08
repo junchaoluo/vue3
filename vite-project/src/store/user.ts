@@ -25,7 +25,7 @@ export const userStore = defineStore({
             sessionStorage.removeItem('userInfo')
             this.token = ''
             this.userInfo = {}
-            window.location.href = `${baseUlr}/login`
+            window.location.href = `http://127.0.0.1:5173/#/login`
         },
         async handleLogin(param: LoginParam) {
             const { code, result } = await login(param)
@@ -69,7 +69,7 @@ export const userStore = defineStore({
 			    sessionStorage.removeItem('redirectURL')
             } else {
                 // 登录成功默认到首页
-                window.location.href=`${baseUlr}/home`
+                window.location.href=`${baseUlr}/#/`
             }
         }
     }

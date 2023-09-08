@@ -1,5 +1,5 @@
 <template>
-  <div class="home-container">234</div>
+  <div class="">project</div>
 </template>
 
 <script setup>
