@@ -18,7 +18,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue"
 import { menuRoutes } from '@/router/menu'
 import { useRouter } from 'vue-router'
@@ -26,10 +26,10 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 
 // 菜单是否折叠
-const isCollapse = ref(false)
+const isCollapse = ref<boolean>(false)
 
-const selectMenu = (context) => {
-  router.push(context)
+const selectMenu = (path: string) => {
+  router.push(path)
 }
 </script>
 

@@ -9,24 +9,11 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
+import { RouteRecordRaw } from 'vue-router'
+import { breadcrumbStore } from '@/store/breadcrumb'
 
-interface CurrentRouterProps {
-  name?: any,
-  path: any,
-  [propName: string]: unknown
-}
-
-// 当前路由信息
-const currentRouter: CurrentRouterProps = reactive({
-  name: '',
-  path: ''
-})
-
-watchEffect(() => {
-  console.log(useRouter().currentRoute.value.name, currentRouter.name)
-  currentRouter.name = useRouter().currentRoute?.value?.name || ''
-  currentRouter.path = useRouter().currentRoute?.value?.path || ''
+const currentRouter: RouteRecordRaw = computed(() => {
+  return breadcrumbStore().currentRoute
 })
 
 </script>

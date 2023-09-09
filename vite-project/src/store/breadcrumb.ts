@@ -1,15 +1,15 @@
 import { defineStore } from 'pinia'
-import {} from 'vue-router'
+import { RouteRecordRaw } from 'vue-router'
 
 export const breadcrumbStore = defineStore({
     id: 'breadcrumb-store',
     state: () => {
         return {
-            currentRoute: {}
+            currentRoute: <RouteRecordRaw>{}
         }
     },
     actions: {
-        setCurrentRoute(currentRoute) {
+        setCurrentRoute(currentRoute: RouteRecordRaw) {
             this.currentRoute = currentRoute
         }
     }

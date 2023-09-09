@@ -2,6 +2,7 @@ import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 import Layout from '@/layout/index.vue'
 import { userStore } from '@/store/user'
 import { menuRoutes } from './menu'
+import { breadcrumbStore } from '@/store/breadcrumb'
 
 export const routes: Array<RouteRecordRaw> = [
     {
@@ -31,6 +32,7 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
     let token = userStore().token
     if(token) {
+      breadcrumbStore().setCurrentRoute(to)
       next()
     }else{
       if(to.path !== '/login') {
