@@ -12,13 +12,22 @@
         <div class="search">
           <el-button type="primary">新增项目</el-button>
           <div class="search-operate">
-            <el-input v-model="keyword" class="mr12" placeholder="请输入项目编号查询"/>
+            <el-input v-model="searchParams.keywords" class="mr12" placeholder="请输入项目编号查询"/>
             <el-button class="mr12" type="primary" @click="search">搜索</el-button>
           </div>
         </div>
       </div>
       <div class="table">
-        <CustomTable :columns="columns" :data="tableData" :showPage="showPage" :total="total" :page-num="page.pageNum" :page-size="page.pageSize" :height="tableHeight"/>
+        <CustomTable
+          :columns="columns" 
+          :data="tableData" 
+          :showPage="showPage" 
+          :total="total" 
+          :page-num="searchParams.pageNum" 
+          :page-size="searchParams.pageSize" 
+          :height="tableHeight"
+          @handleSizeChange="handleSizeChange"
+          @handleCurrentChange="handleCurrentChange"/>
       </div>
     </div>
   </div>
@@ -26,6 +35,7 @@
 
 <script setup lang="ts">
 import CustomTable from '@/components/custom-table/index.vue'
+import { getProjectListByPage, getArchiveProjectListByPage } from '@/api/project'
 
 type StatusTabList = {
  name: string,
@@ -34,6 +44,9 @@ type StatusTabList = {
 type Page = {
   pageNum: number,
   pageSize: number
+}
+type SearchParams = Page & {
+  keywords: string
 }
 
 const top = ref<any>(null)
@@ -66,8 +79,8 @@ const statusTabList = reactive<Array<StatusTabList>>([
 const activeTab = ref(0)
 
 // 关键字
-const keyword = ref('')
-const page = reactive<Page>({
+const searchParams = reactive<SearchParams>({
+  keywords: '',
   pageNum: 1,
   pageSize: 20
 })
@@ -118,15 +131,30 @@ const columns = [
     minWidth: 200,
   }
 ]
-const tableData = reactive([])
+const tableData = ref([])
 const total = ref(0)
 
-const getTableData = () => {
-
+const getTableData = async () => {
+  let func = activeTab.value === 0 ? getProjectListByPage : getArchiveProjectListByPage
+  const { code, result } = await func(searchParams)
+  if(code === 0) {
+    tableData.value = result.list || []
+    total.value = Number(result.total) || 0
+  }
 }
 const search = () => {
-  page.pageNum = 1
-  page.pageSize = 20
+  searchParams.pageNum = 1
+  searchParams.pageSize = 20
+  getTableData()
+}
+search()
+
+const handleSizeChange = (pageSize: number) => {
+  searchParams.pageSize = pageSize
+  getTableData()
+}
+const handleCurrentChange = (pageNum: number) => {
+  searchParams.pageNum = pageNum
   getTableData()
 }
 </script>
