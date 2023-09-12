@@ -1,29 +1,30 @@
 <template>
-  <div class="project-container">
+  <div class="project-container" v-resize="handlerSize">
     <div class="module">
-      <div class="status">
-        <span class="status-label">当前状态：</span>
-        <el-tabs type="card" class="demo-tabs" v-model="activeTab">
-          <el-tab-pane v-for="tab in statusTabList" :name="tab.value" :label="tab.name"></el-tab-pane>
-        </el-tabs>
-      </div>
-      <el-divider border-style="dashed" />
-      <div class="search">
-        <el-button type="primary">新增项目</el-button>
-        <div class="search-operate">
-          <el-input v-model="keyword" class="mr12" placeholder="请输入项目编号查询"/>
-          <el-button class="mr12" type="primary" @click="search">搜索</el-button>
+      <div class="top" ref="top">
+        <div class="status">
+          <span class="status-label">当前状态：</span>
+          <el-tabs type="card" class="demo-tabs" v-model="activeTab">
+            <el-tab-pane v-for="tab in statusTabList" :name="tab.value" :label="tab.name"></el-tab-pane>
+          </el-tabs>
+        </div>
+        <el-divider border-style="dashed" />
+        <div class="search">
+          <el-button type="primary">新增项目</el-button>
+          <div class="search-operate">
+            <el-input v-model="keyword" class="mr12" placeholder="请输入项目编号查询"/>
+            <el-button class="mr12" type="primary" @click="search">搜索</el-button>
+          </div>
         </div>
       </div>
       <div class="table">
-        <CustomTable :columns="columns" :data="tableData" :total="total" :page-num="page.pageNum" :page-size="page.pageSize"/>
+        <CustomTable :columns="columns" :data="tableData" :showPage="showPage" :total="total" :page-num="page.pageNum" :page-size="page.pageSize" :height="tableHeight"/>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {} from "vue"
 import CustomTable from '@/components/custom-table/index.vue'
 
 type StatusTabList = {
@@ -34,6 +35,22 @@ type Page = {
   pageNum: number,
   pageSize: number
 }
+
+const top = ref<any>(null)
+const topHeight = ref<number>(0)
+const tableHeight = ref<number | string>(0)
+const showPage = ref(true)
+const pageHeight = ref<number>(showPage.value ? 48 : 0)
+
+const handlerSize = (info) => {
+  topHeight.value = top.value.offsetHeight
+  tableHeight.value = (info?.height - topHeight.value - 48 - pageHeight.value) || '100%'
+}
+
+onMounted(() => {
+  topHeight.value = top.value.offsetHeight
+  tableHeight.value = `calc(100vh - ${topHeight.value}px - 136px - ${pageHeight.value}px)`
+})
 
 // tab状态
 const statusTabList = reactive<Array<StatusTabList>>([
@@ -119,6 +136,7 @@ const search = () => {
     background-color: #fff;
     margin: 16px;
     height: calc(100vh - 88px);
+    width: calc(100vw - 210px);
     border-radius: 4px;
   .module {
     padding: 16px;
