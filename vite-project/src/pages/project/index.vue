@@ -16,7 +16,7 @@
         </div>
       </div>
       <div class="table">
-
+        <CustomTable :columns="columns" :data="tableData" :total="total" :page-num="page.pageNum" :page-size="page.pageSize"/>
       </div>
     </div>
   </div>
@@ -24,7 +24,7 @@
 
 <script setup lang="ts">
 import {} from "vue"
-import type {} from 'ele'
+import CustomTable from '@/components/custom-table/index.vue'
 
 type StatusTabList = {
  name: string,
@@ -56,10 +56,53 @@ const page = reactive<Page>({
 })
 const columns = [
   {
-
+    label: '项目编号',
+    prop: 'code',
+    minWidth: 200,
+  },
+  {
+    label: '起止时间',
+    prop: 'startTime',
+    minWidth: 200,
+  },
+  {
+    label: '实验记录数',
+    prop: 'notebookQuantity',
+    minWidth: 200,
+  },
+  {
+    label: 'PM',
+    prop: 'PM',
+    minWidth: 200,
+  },
+  {
+    label: '所属部门',
+    prop: 'departmentName',
+    minWidth: 200,
+  },
+  {
+    label: '项目类型',
+    prop: 'projectType',
+    minWidth: 200,
+  },
+  {
+    label: '项目成员数',
+    prop: 'userQuantity',
+    minWidth: 200,
+  },
+  {
+    label: '创建人',
+    prop: 'createUser',
+    minWidth: 200,
+  },
+  {
+    label: '创建时间',
+    prop: 'createTime',
+    minWidth: 200,
   }
 ]
 const tableData = reactive([])
+const total = ref(0)
 
 const getTableData = () => {
 
@@ -99,6 +142,9 @@ const search = () => {
         display: flex;
         align-items: center;
       }
+    }
+    .table {
+      padding-top: 16px;
     }
   }
 }

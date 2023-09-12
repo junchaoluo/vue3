@@ -29,7 +29,6 @@ export const userStore = defineStore({
         },
         async handleLogin(param: LoginParam) {
             const { code, result } = await login(param)
-            console.log(code)
             let userInfo: UserInfo = {}
             if(code === 0) {
                 userInfo = {
