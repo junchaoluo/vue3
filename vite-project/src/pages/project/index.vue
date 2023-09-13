@@ -37,6 +37,7 @@
 import CustomTable from '@/components/custom-table/index.vue'
 import { getProjectListByPage, getArchiveProjectListByPage } from '@/api/project'
 import type { RenderRowData } from 'element-plus'
+import { Fragment } from 'vue';
 
 type StatusTabList = {
  name: string,
@@ -151,14 +152,20 @@ const columns = reactive([
   {
     label: '操作',
     fixed: 'right',
-    minWidth: 200,
+    minWidth: 150,
     render: (scope: RenderRowData<any>) => {
       return (
         <div>
           <el-button type="primary" link>查看</el-button>
-          <el-button type="primary" link>编辑</el-button>
-          <el-button type="primary" link>结束</el-button>
-          <el-button type="primary" link>恢复</el-button>
+          {
+            activeTab.value === 0 ?
+            <Fragment>
+              <el-button type="primary" link disabled={!scope.row.canEdit}>编辑</el-button>
+              <el-button type="primary" link disabled={scope.row.canArchive}>结束</el-button>
+            </Fragment>
+              :
+            <el-button type="primary" link disabled={scope.row.canRenew}>恢复</el-button>
+          }
         </div>
       )
     }
