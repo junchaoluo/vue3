@@ -1,8 +1,12 @@
 <template>
   <div class="add-project-container">
     <div class="content">
-        <div class="basic-info"></div>
-        <div class="project-member"></div>
+        <div class="basic-info">
+            <BasicInfo/>
+        </div>
+        <div class="project-member">
+            <ProjectMember/>
+        </div>
     </div>
     <div class="operation">
         <el-button type="">取消</el-button>
@@ -12,19 +16,17 @@
 </template>
 
 <script setup lang="tsx">
+import BasicInfo from '@/pages/project/components/basic-info.vue'
+import ProjectMember from '@/pages/project/components/project-member.vue'
 
 </script>
 
 <style lang="scss" scoped>
 .content {
     height: calc(100vh - 120px);
+    overflow-y: auto;
     padding: 16px;
     box-sizing: border-box;
-    .basic-info,
-    .project-member {
-        margin-bottom: 16px;
-        background-color: #fff;
-    }
 }
 .operation {
     background-color: #fff;
