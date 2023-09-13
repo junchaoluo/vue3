@@ -6,6 +6,7 @@ import Components from 'unplugin-vue-components/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import Icons from 'unplugin-icons/vite'
 import IconsResolver from 'unplugin-icons/resolver'
+import VueJsx from '@vitejs/plugin-vue-jsx'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -16,6 +17,7 @@ export default defineConfig({
   },
   plugins: [
     vue(),
+    VueJsx(),
     Components({
       resolvers: [
         ElementPlusResolver(),
@@ -44,4 +46,9 @@ export default defineConfig({
       autoInstall: true
     })
   ],
+  server: {
+    host: '0.0.0.0',
+    port: 7000,
+    open: true
+  }
 })

@@ -23,26 +23,27 @@
           :data="tableData" 
           :showPage="showPage" 
           :total="total" 
-          :page-num="searchParams.pageNum" 
+          :page-num="searchParams.pageIndex" 
           :page-size="searchParams.pageSize" 
           :height="tableHeight"
           @handleSizeChange="handleSizeChange"
-          @handleCurrentChange="handleCurrentChange"/>
+          @handleCurrentChange="handleCurrentChange"></CustomTable>
       </div>
     </div>
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang="tsx">
 import CustomTable from '@/components/custom-table/index.vue'
 import { getProjectListByPage, getArchiveProjectListByPage } from '@/api/project'
+import type { RenderRowData } from 'element-plus'
 
 type StatusTabList = {
  name: string,
  value: number 
 }
 type Page = {
-  pageNum: number,
+  pageIndex: number,
   pageSize: number
 }
 type SearchParams = Page & {
@@ -76,19 +77,24 @@ const statusTabList = reactive<Array<StatusTabList>>([
     value: 1
   }
 ])
-const activeTab = ref(0)
+const activeTab = ref<number>(0)
 
 // 关键字
 const searchParams = reactive<SearchParams>({
   keywords: '',
-  pageNum: 1,
+  pageIndex: 1,
   pageSize: 20
 })
-const columns = [
+const columns = reactive([
   {
     label: '项目编号',
     prop: 'code',
     minWidth: 200,
+    render: (scope: RenderRowData<any>) => {
+      return (
+        <el-button link type="primary">{scope.row.code}</el-button>
+      )
+    }
   },
   {
     label: '起止时间',
@@ -104,6 +110,18 @@ const columns = [
     label: 'PM',
     prop: 'PM',
     minWidth: 200,
+    render: (scope: RenderRowData<any>) => {
+      let pm = scope.row.pmUserProjectInfos.map((item: {
+        userName: string,
+        projectId: string,
+        roleId: string,
+        roleName: string,
+        userId: string
+      }) => item.userName)
+      return (
+        <span>{pm.join(',')}</span>
+      )
+    }
   },
   {
     label: '所属部门',
@@ -129,8 +147,23 @@ const columns = [
     label: '创建时间',
     prop: 'createTime',
     minWidth: 200,
+  },
+  {
+    label: '操作',
+    fixed: 'right',
+    minWidth: 200,
+    render: (scope: RenderRowData<any>) => {
+      return (
+        <div>
+          <el-button type="primary" link>查看</el-button>
+          <el-button type="primary" link>编辑</el-button>
+          <el-button type="primary" link>结束</el-button>
+          <el-button type="primary" link>恢复</el-button>
+        </div>
+      )
+    }
   }
-]
+])
 const tableData = ref([])
 const total = ref(0)
 
@@ -143,7 +176,7 @@ const getTableData = async () => {
   }
 }
 const search = () => {
-  searchParams.pageNum = 1
+  searchParams.pageIndex = 1
   searchParams.pageSize = 20
   getTableData()
 }
@@ -153,10 +186,14 @@ const handleSizeChange = (pageSize: number) => {
   searchParams.pageSize = pageSize
   getTableData()
 }
-const handleCurrentChange = (pageNum: number) => {
-  searchParams.pageNum = pageNum
+const handleCurrentChange = (pageIndex: number) => {
+  searchParams.pageIndex = pageIndex
   getTableData()
 }
+
+watch(activeTab, (_val: number, _oldV: number) => {
+  search()
+})
 </script>
 
 <style lang="scss" scoped>

@@ -25,7 +25,7 @@ export const userStore = defineStore({
             sessionStorage.removeItem('userInfo')
             this.token = ''
             this.userInfo = {}
-            window.location.href = `http://127.0.0.1:5173/#/login`
+            window.location.href = `http://127.0.0.1:7000/#/login`
         },
         async handleLogin(param: LoginParam) {
             const { code, result } = await login(param)

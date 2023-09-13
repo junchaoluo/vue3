@@ -15,7 +15,7 @@ const request = axios.create({
     baseURL: baseURL
 })
 
-export const baseUlr = 'http://127.0.0.1:5173'
+export const baseUlr = 'http://127.0.0.1:7000'
 
 request.interceptors.request.use(config => {
     if(token) {

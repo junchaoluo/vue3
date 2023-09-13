@@ -1,5 +1,5 @@
 export interface SearchProjectParams {
     keywords: string,
-    pageNum: number,
+    pageIndex: number,
     pageSize: number
 }

@@ -8,7 +8,14 @@
     >
         <el-table-column
             v-for="tableColumn in columns"
-            v-bind="tableColumn">
+            v-bind="tableColumn"
+            :show-overflow-tooltip="true">
+            <template #default="scope">
+                <template v-if="tableColumn.slotName">
+                    <slot :name="tableColumn.slotName" :row="scope.row" :column="scope.column" :index="scope.$index"></slot>
+                </template>
+                <component :is="tableColumn.render && typeof tableColumn.render === 'function' ? tableColumn.render(scope) : tableColumn.render" :scope="scope"></component>
+            </template>
         </el-table-column>
     </el-table>
     <template v-if="showPage">
