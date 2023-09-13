@@ -10,7 +10,7 @@
         </div>
         <el-divider border-style="dashed" />
         <div class="search">
-          <el-button type="primary">新增项目</el-button>
+          <el-button type="primary" @click="addProject">新增项目</el-button>
           <div class="search-operate">
             <el-input v-model="searchParams.keywords" class="mr12" placeholder="请输入项目编号查询"/>
             <el-button class="mr12" type="primary" @click="search">搜索</el-button>
@@ -38,6 +38,7 @@ import CustomTable from '@/components/custom-table/index.vue'
 import { getProjectListByPage, getArchiveProjectListByPage } from '@/api/project'
 import type { RenderRowData } from 'element-plus'
 import { Fragment } from 'vue';
+import {useRouter} from 'vue-router';
 
 type StatusTabList = {
  name: string,
@@ -51,6 +52,8 @@ type SearchParams = Page & {
   keywords: string
 }
 
+const router = useRouter()
+
 const top = ref<any>(null)
 const topHeight = ref<number>(0)
 const tableHeight = ref<number | string>(0)
@@ -63,8 +66,10 @@ const handlerSize = (info) => {
 }
 
 onMounted(() => {
-  topHeight.value = top.value.offsetHeight
-  tableHeight.value = `calc(100vh - ${topHeight.value}px - 136px - ${pageHeight.value}px)`
+  nextTick(() => {
+    topHeight.value = top.value.offsetHeight
+    tableHeight.value = `calc(100vh - ${topHeight.value}px - 136px - ${pageHeight.value}px)`
+  })
 })
 
 // tab状态
@@ -201,6 +206,10 @@ const handleCurrentChange = (pageIndex: number) => {
 watch(activeTab, (_val: number, _oldV: number) => {
   search()
 })
+
+const addProject = () => {
+  router.push('/project/add')
+}
 </script>
 
 <style lang="scss" scoped>
