@@ -83,3 +83,8 @@ button:focus-visible {
 .mr12 {
   margin: 0 12px;
 }
+
+.el-select,
+.el-cascader {
+  width: 100%;
+}

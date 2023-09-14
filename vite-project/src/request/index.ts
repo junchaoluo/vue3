@@ -4,7 +4,7 @@ import { userStore } from '@/store/user'
 import { appStore } from '@/store/app'
 
 const baseURL: string = 'https://test.pharmaoryx.tech:9000'
-const token: string = sessionStorage.getItem('token') || ''
+// const token: string = sessionStorage.getItem('token') || ''
 const vsersionEln: string = localStorage.getItem('VERSION_ELN') || ''
 const SUCCESS_CODE: number = 0
 let isResrLogin: boolean = true
@@ -18,6 +18,7 @@ const request = axios.create({
 export const baseUlr = 'http://127.0.0.1:7000'
 
 request.interceptors.request.use(config => {
+  let token = userStore().token
     if(token) {
         config.headers['Authorization'] = token
         config.headers['Version'] = vsersionEln

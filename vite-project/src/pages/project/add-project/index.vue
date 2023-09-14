@@ -2,7 +2,7 @@
   <div class="add-project-container">
     <div class="content">
         <div class="basic-info">
-            <BasicInfo/>
+            <BasicInfo ref="basicInfoRef" />
         </div>
         <div class="project-member">
             <ProjectMember/>
@@ -10,7 +10,7 @@
     </div>
     <div class="operation">
         <el-button type="">取消</el-button>
-        <el-button type="primary">保存</el-button>
+        <el-button type="primary" @click="save">保存</el-button>
     </div>
   </div>
 </template>
@@ -18,6 +18,12 @@
 <script setup lang="tsx">
 import BasicInfo from '@/pages/project/components/basic-info.vue'
 import ProjectMember from '@/pages/project/components/project-member.vue'
+
+const basicInfoRef = ref(null)
+
+const save = () => {
+    console.log(basicInfoRef)
+}
 
 </script>
 
