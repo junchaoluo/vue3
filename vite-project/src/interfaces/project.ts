@@ -3,3 +3,9 @@ export interface SearchProjectParams {
     pageIndex: number,
     pageSize: number
 }
+
+export interface SearchProductListParams {
+    pageNum: number,
+    pageSize: number,
+    pdNo: string
+}
