@@ -1,18 +1,20 @@
 <template>
   <div class="user-select-container">
     <el-select
-      v-model="userList"
-      multiple
-      placeholder="请选择用户"
-      :remote="true"
-      :loading="selectUser.loading"
-      filterable
-      value-key="id"
-      :remote-method="selectUser.remoteMethod"
-      @change="changeUser"
-    >
+        v-model="userList"
+        multiple
+        :placeholder="placeholder"
+        :remote="true"
+        :loading="loading"
+        filterable
+        :reserve-keyword="false"
+        value-key="id"
+        :clearable="true"
+        :remote-method="remoteMethod"
+        @change="changeUser"
+        >
         <el-option
-            v-for="item in selectUser.userData.list"
+            v-for="item in userData.list"
             :key="item.id"
             :label="item.realName || item.name"
             :value="item"
@@ -24,13 +26,13 @@
 </template>
 
 <script setup lang="tsx">
-import useSelectUser from './useSelectUser'
+import useSelectUser from '@/components/user-choose/useSelectUser'
 
-const selectUser = useSelectUser()
+const {userData, loading, remoteMethod} = useSelectUser()
 
 interface Props {
     placeholder?: string,
-    users: Array
+    users: Array<any>
 }
 
 const props = withDefaults(defineProps<Props>(),{
@@ -38,16 +40,18 @@ const props = withDefaults(defineProps<Props>(),{
     users: () => []
 })
 const { placeholder, users } = toRefs(props)
+const emit = defineEmits(['handleChange'])
 
 const userList = ref<Array<any>>([])
 watch(users, (newV, oldV) => {
-    userList.value = users
+    userList.value = newV
 }, {
     immediate: true
 })
 
-const changeUser = (user) => {
-    userList.value.push(user)
+const changeUser = (e) => {
+    console.log(e)
+    emit('handleChange', userList)
 }
 
 </script>

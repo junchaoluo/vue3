@@ -1,6 +1,6 @@
 import request from '@/request'
 import { SearchProjectParams, SearchProductListParams } from '@/interfaces/project'
-import { ELN_PREFIX, CHEM_PREFIX } from '@/api/constant'
+import { ELN_PREFIX, CHEM_PREFIX, BASE_PREFIX } from '@/api/constant'
 
 export function getProjectListByPage(params:SearchProjectParams) {
     return request({
@@ -23,11 +23,22 @@ export function getArchiveProjectListByPage(params:SearchProjectParams) {
  * @return {Promise}
  */
  export function getProducts(params: SearchProductListParams) {
-    return request({
-      url: CHEM_PREFIX + `/v1/product/product/findProductList/${params.pageNum}/${params.pageSize}`,
-      method: 'get',
-      params: {
-        pdNo: params.pdNo
-      }
-    })
-  }
+  return request({
+    url: CHEM_PREFIX + `/v1/product/product/findProductList/${params.pageNum}/${params.pageSize}`,
+    method: 'get',
+    params: {
+      pdNo: params.pdNo
+    }
+  })
+}
+
+/**
+ * 获取项目角色列表
+ * @return {Promise}
+ */
+ export function getProjectRoleList() {
+  return request({
+    url: BASE_PREFIX + '/role/project/query',
+    method: 'get'
+  })
+}

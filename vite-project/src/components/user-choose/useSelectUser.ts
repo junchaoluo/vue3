@@ -20,7 +20,7 @@ const useSelectUser = () => {
 
     return {
         userData,
-        loading: loading.value,
+        loading,
         remoteMethod
     }
 }

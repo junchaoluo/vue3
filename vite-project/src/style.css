@@ -88,3 +88,7 @@ button:focus-visible {
 .el-cascader {
   width: 100%;
 }
+
+.required-icon {
+  color: #d90013;
+}

@@ -5,7 +5,7 @@
             <BasicInfo ref="basicInfoRef" />
         </div>
         <div class="project-member">
-            <ProjectMember/>
+            <ProjectMember ref="projectMemberRef"/>
         </div>
     </div>
     <div class="operation">
@@ -20,9 +20,10 @@ import BasicInfo from '@/pages/project/components/basic-info.vue'
 import ProjectMember from '@/pages/project/components/project-member.vue'
 
 const basicInfoRef = ref(null)
+const projectMemberRef = ref(null)
 
 const save = () => {
-    console.log(basicInfoRef)
+    console.log(basicInfoRef, projectMemberRef.value.table.tableData)
 }
 
 </script>
