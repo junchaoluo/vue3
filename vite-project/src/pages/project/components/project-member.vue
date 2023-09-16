@@ -101,7 +101,6 @@ const selectUserModal = ref<boolean>(false)
 const editRowSelectUser = ref<Array<any>>([])
 // 点击选择人员弹框
 const chooseUser = (scope: RenderRowData<any>) => {
-    console.log(scope)
     editRowIndex.value = scope.$index
     editRowSelectUser.value = scope.users || []
     selectUserModal.value = true
