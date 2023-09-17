@@ -27,14 +27,31 @@
 import { Search } from '@element-plus/icons-vue'
 
 interface Props {
-  visible: boolean
+  visible: boolean,
+  checkedUser?: Array<any>
 }
 
 const props = withDefaults(defineProps<Props>(), {
   visible: false,
+  checkedUser: () => []
 })
-const { visible } = toRefs(props)
-const dialogVisible = computed(() => visible.value)
+const { visible, checkedUser } = toRefs(props)
+const dialogVisible = ref(false)
+const checkedUserList = ref<Array<any>>([])
+// 获取根节点部门的数据
+const getDeptTree = () => {
+
+}
+
+watch([visible, checkedUser], ([newVisible, newCheckedUser], [oldVisible, oldCheckedUser]) => {
+  console.log(newVisible, newCheckedUser, oldVisible, oldCheckedUser)
+  dialogVisible.value = newVisible
+  checkedUserList.value = newCheckedUser
+  getDeptTree()
+}, {
+  immediate: true,
+  deep: true
+})
 
 const keywords = ref('')
 
