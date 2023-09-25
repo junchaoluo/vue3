@@ -28,7 +28,7 @@
 <script setup lang="tsx">
 import useSelectUser from '@/components/user-choose/useSelectUser'
 
-const {userData, loading, remoteMethod} = useSelectUser()
+const {userData, loading, remoteMethod, defaultUsers} = useSelectUser()
 
 interface Props {
     placeholder?: string,
@@ -45,12 +45,13 @@ const emit = defineEmits(['handleChange'])
 const userList = ref<Array<any>>([])
 watch(users, (newV, oldV) => {
     userList.value = newV
+    defaultUsers(newV)
 }, {
-    immediate: true
+    immediate: true,
+    deep: true
 })
 
 const changeUser = (e) => {
-    console.log(e)
     emit('handleChange', userList)
 }
 

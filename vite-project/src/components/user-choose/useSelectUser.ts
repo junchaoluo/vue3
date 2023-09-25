@@ -18,10 +18,16 @@ const useSelectUser = () => {
         loading.value = false
     }
 
+    const defaultUsers = (users: Array<any>) => {
+        userData.list.push(...users)
+        userData.total = userData.total + users.length
+    }
+
     return {
         userData,
         loading,
-        remoteMethod
+        remoteMethod,
+        defaultUsers
     }
 }
 

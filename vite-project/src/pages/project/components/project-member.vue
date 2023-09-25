@@ -11,7 +11,7 @@
             <CustomTable :columns="table.columns" :data="table.tableData" :show-page="false"/>
         </div>
         <!-- 选择人员组件 -->
-        <UserChoose :visible="selectUserModal" @close="closeChooseUser" @confirm="confirmChooseUser"/>
+        <UserChoose :visible="selectUserModal" :choose-type="3" :checked-user="editRowSelectUser" :is-single="false" @close="closeChooseUser" @confirm="confirmChooseUser"/>
     </el-card>
   </div>
 </template>
@@ -102,18 +102,21 @@ const editRowSelectUser = ref<Array<any>>([])
 // 点击选择人员弹框
 const chooseUser = (scope: RenderRowData<any>) => {
     editRowIndex.value = scope.$index
-    editRowSelectUser.value = scope.users || []
+    editRowSelectUser.value = scope.row.users || []
     selectUserModal.value = true
 }
+// 关闭选择人员弹框
 const closeChooseUser = () => {
     selectUserModal.value = false
 }
-const confirmChooseUser = (a) => {
-    console.log(a)
+// 选择人员弹框点击确定
+const confirmChooseUser = (arr) => {
+    table.tableData[editRowIndex.value].users = arr
+    selectUserModal.value = false
 }
 // 清除所有人员
 const clearAllUser = (index: number) => {
-    table.tableData.splice(index, 1)
+    table.tableData[index].users = []
 }
 
 defineExpose({
