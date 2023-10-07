@@ -161,11 +161,11 @@ const columns = reactive([
     render: (scope: RenderRowData<any>) => {
       return (
         <div>
-          <el-button type="primary" link>查看</el-button>
+          <el-button type="primary" link onClick={() => operateProject(scope.row, 1)}>查看</el-button>
           {
             activeTab.value === 0 ?
             <Fragment>
-              <el-button type="primary" link disabled={!scope.row.canEdit}>编辑</el-button>
+              <el-button type="primary" link disabled={!scope.row.canEdit} onClick={() => operateProject(scope.row, 2)}>编辑</el-button>
               <el-button type="primary" link disabled={scope.row.canArchive}>结束</el-button>
             </Fragment>
               :
@@ -207,8 +207,22 @@ watch(activeTab, (_val: number, _oldV: number) => {
   search()
 })
 
+// 新增项目
 const addProject = () => {
   router.push('/project/add')
+}
+// 查看、编辑项目 type 1:查看 2：编辑
+const operateProject = (row, type) => {
+  switch(type) {
+    case 1:
+      router.push(`/project/add?id=${row.id}&type=${type}`)
+      break;
+    case 2:
+      router.push(`/project/add?id=${row.id}&type=${type}`)
+      break;
+    default:
+      break;
+  }
 }
 </script>
 

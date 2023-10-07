@@ -24,9 +24,15 @@ import { User, Delete } from '@element-plus/icons-vue'
 import UserSelect from '@/components/user-choose/user-select.vue'
 import { getProjectRoleList } from '@/api/project'
 import UserChoose from '@/components/user-choose/index.vue'
+import useProjectInfo from '../hooks/useProjectInfo'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+const project = useProjectInfo()
+const type = route.query?.type
 
 const table = reactive({
-    tableData: [{users: []}],
+    tableData: [{user: []}],
     columns: [
         {
             label: '岗位',
@@ -45,43 +51,65 @@ const table = reactive({
             label: '人员配置',
             prop: 'user',
             render: (scope: RenderRowData<any>) => {
-                return (
-                    <UserSelect users={scope.row.users || []} onHandleChange={($event) => onChangeUser(scope, $event)} />
-                )
+                if(type === '1') {
+                    return <span>{scope.row?.user?.map(item => item.name).join(',')}</span>
+                }else{
+                    return (
+                        <UserSelect users={scope.row.user || []} onHandleChange={($event) => onChangeUser(scope, $event)} />
+                    )
+                }
             }
         },
         {
             label: '操作',
             width: 100,
             render: (scope: RenderRowData<any>) => {
-                return (
-                    <Fragment>
-                        <el-tooltip
-                            class="box-item"
-                            effect="dark"
-                            content="选择成员"
-                            placement="bottom"
-                        >
-                            <el-icon onClick={() =>chooseUser(scope)}><User /></el-icon>
-                        </el-tooltip>
-                        <el-divider direction="vertical" />
-                        <el-tooltip
-                            class="box-item"
-                            effect="dark"
-                            content="清除全部"
-                            placement="bottom"
-                        >
-                            <el-icon onClick={() => clearAllUser(scope.$index)}><Delete /></el-icon>
-                        </el-tooltip>
-                    </Fragment>
-                )
+                if(type !== '1') {
+                    return (
+                        <Fragment>
+                            <el-tooltip
+                                class="box-item"
+                                effect="dark"
+                                content="选择成员"
+                                placement="bottom"
+                            >
+                                <el-icon onClick={() =>chooseUser(scope)}><User /></el-icon>
+                            </el-tooltip>
+                            <el-divider direction="vertical" />
+                            <el-tooltip
+                                class="box-item"
+                                effect="dark"
+                                content="清除全部"
+                                placement="bottom"
+                            >
+                                <el-icon onClick={() => clearAllUser(scope.$index)}><Delete /></el-icon>
+                            </el-tooltip>
+                        </Fragment>
+                    )
+                }else{
+                    return <span></span>
+                }
             }
         },
     ]
 })
 const getRoleList = async () => {
     const { result } = await getProjectRoleList()
-    table.tableData = result
+    if(route.query?.id) {
+        let requiredIds = []
+        result.map(r => {
+            // 循环拿到必填的角色id
+            if (r.isCheck === '1') {
+                requiredIds.push(r.id)
+            }
+            return r
+        })
+        project.requiredIds.value = requiredIds
+        await project.getRoleByProjectId(route.query.id)
+        table.tableData = project.projectRoleUserList.value
+    }else{
+        table.tableData = result
+    }
 }
 getRoleList()
 
@@ -89,7 +117,7 @@ getRoleList()
 const onChangeUser = (scope: RenderRowData<any>, event: any) => {
     let data = table.tableData.map((item, index) => {
         if(index === scope.$index) {
-            item.users = event.value || []
+            item.user = event.value || []
         }
         return item
     })
@@ -102,7 +130,7 @@ const editRowSelectUser = ref<Array<any>>([])
 // 点击选择人员弹框
 const chooseUser = (scope: RenderRowData<any>) => {
     editRowIndex.value = scope.$index
-    editRowSelectUser.value = scope.row.users || []
+    editRowSelectUser.value = scope.row.user || []
     selectUserModal.value = true
 }
 // 关闭选择人员弹框
@@ -111,17 +139,17 @@ const closeChooseUser = () => {
 }
 // 选择人员弹框点击确定
 const confirmChooseUser = (arr) => {
-    table.tableData[editRowIndex.value].users = arr
+    table.tableData[editRowIndex.value].user = arr
     selectUserModal.value = false
 }
 // 清除所有人员
 const clearAllUser = (index: number) => {
-    table.tableData[index].users = []
+    table.tableData[index].user = []
 }
 
 // 验证必填
 const doValidate = () => {
-    let requiredEmpty = table.tableData.find(item => item.isCheck && (!(item.users || item.users.length)))
+    let requiredEmpty = table.tableData.find(item => item.isCheck && (!(item.user || item.user.length)))
     if(requiredEmpty) {
         ElMessage.error('项目角色有必填岗位人员未配置，请进行配置！')
     }

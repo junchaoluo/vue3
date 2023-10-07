@@ -1,14 +1,14 @@
 <template>
   <div class="add-project-container">
-    <div class="content">
+    <div class="content" :style="{ height: type !== '1'? 'calc(100vh - 120px)' : `calc(100vh - 72px)` }">
         <div class="basic-info">
-            <BasicInfo ref="basicInfoRef" />
+            <BasicInfo ref="basicInfoRef" :id="id" :type="type" />
         </div>
         <div class="project-member">
-            <ProjectMember ref="projectMemberRef"/>
+            <ProjectMember ref="projectMemberRef" :id="id" :type="type" />
         </div>
     </div>
-    <div class="operation">
+    <div class="operation" v-if="type !== '1'">
         <el-button type="">取消</el-button>
         <el-button type="primary" @click="save">保存</el-button>
     </div>
@@ -18,14 +18,15 @@
 <script setup lang="tsx">
 import BasicInfo from '@/pages/project/components/basic-info.vue'
 import ProjectMember from '@/pages/project/components/project-member.vue'
-import { createProject } from '@/api/project'
+import { createProject, updateProject } from '@/api/project'
 import { ElMessage } from 'element-plus';
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute, toRaw } from 'vue-router'
 
 const router = useRouter()
-
+const route = useRoute()
 const basicInfoRef = ref(null)
 const projectMemberRef = ref(null)
+const type = route.query?.type
 
 // 验证
 const doValidate = () => {
@@ -45,15 +46,16 @@ const doValidate = () => {
                 startTime: (basicForm.cycle && basicForm.cycle[0]) || '',
                 endTime: (basicForm.cycle && basicForm.cycle[1]) || '',
                 description: basicForm.description,
-                projectType: basicForm.projectType,
-                user: []
+                projectType: basicForm.projectType
             }
             const user = projectMemberRef.value.table.tableData
             params.user = user
-            params.user.forEach(item => {
-                item.roleId = item.id
-                item.roleName = item.name
-            })
+            if(!route.query?.id) {
+                params.user.forEach(item => {
+                    item.roleId = item.id
+                    item.roleName = item.name
+                })
+            }
             resolve(params)
         }
     })
@@ -61,8 +63,12 @@ const doValidate = () => {
 
 const save = () => {
     doValidate().then((params) => {
-        createProject(params).then(() => {
-            ElMessage.success('新增成功！')
+        let func = createProject
+        if (route.query?.id) {
+            func = updateProject
+        }
+        func(params).then(() => {
+            ElMessage.success('编辑成功！')
             router.push('/project')
         })
     })

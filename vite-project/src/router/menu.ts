@@ -20,6 +20,15 @@ export const menuRoutes: Array<RouteRecordRaw> = [
         component: () => import('@/pages/project/add-project/index.vue')
     },
     {
+        path: '/project/view',
+        name: '查看项目',
+        meta: {
+            isMenu: false,
+            isNav: false,
+        },
+        component: () => import('@/pages/project/view-project/index.vue')
+    },
+    {
         path: '/set',
         name: '设置',
         meta: {

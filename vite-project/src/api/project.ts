@@ -55,3 +55,38 @@ export function getArchiveProjectListByPage(params:SearchProjectParams) {
     data: oParams
   })
 }
+
+/**
+ * 通过项目id获取项目详情
+ * @param {String} sProjectId 项目id
+ * @return {Promise}
+ */
+ export function getProjectDetailById(sProjectId:string) {
+  return request({
+    url: ELN_PREFIX + `/project/${sProjectId}`,
+    method: 'get'
+  })
+}
+/**
+ * 通过项目id获取项目成员（以角色为维度）
+ * @param {String} sProject 项目id
+ * @return {Promise}
+ */
+ export function getProjectRoleUserListById(sProjectId:string) {
+  return request({
+    url: ELN_PREFIX + `/project/member/${sProjectId}`,
+    method: 'get'
+  })
+}
+/**
+ * 修改项目
+ * @param {Object} oParams 参数
+ * @return {Promise}
+ */
+ export function updateProject(oParams) {
+  return request({
+    url: ELN_PREFIX + '/project/modify',
+    method: 'post',
+    data: oParams
+  })
+}
