@@ -18,12 +18,54 @@
 <script setup lang="tsx">
 import BasicInfo from '@/pages/project/components/basic-info.vue'
 import ProjectMember from '@/pages/project/components/project-member.vue'
+import { createProject } from '@/api/project'
+import { ElMessage } from 'element-plus';
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const basicInfoRef = ref(null)
 const projectMemberRef = ref(null)
 
+// 验证
+const doValidate = () => {
+    return new Promise(async (resolve, reject) => {
+        let basicInfoFlag = await basicInfoRef.value.doValidate()
+        let projectMemberFlag = projectMemberRef.value.doValidate()
+        if(basicInfoFlag && projectMemberFlag) {
+            let basicForm = basicInfoRef.value.basicInfoForm
+            const params = {
+                id: basicForm.id,
+                name: basicForm.name,
+                code: basicForm.code,
+                productId: basicForm.productId,
+                productCode: basicForm.productCode,
+                departmentId: basicForm.departmentId,
+                departmentName: basicForm.departmentName,
+                startTime: (basicForm.cycle && basicForm.cycle[0]) || '',
+                endTime: (basicForm.cycle && basicForm.cycle[1]) || '',
+                description: basicForm.description,
+                projectType: basicForm.projectType,
+                user: []
+            }
+            const user = projectMemberRef.value.table.tableData
+            params.user = user
+            params.user.forEach(item => {
+                item.roleId = item.id
+                item.roleName = item.name
+            })
+            resolve(params)
+        }
+    })
+}
+
 const save = () => {
-    console.log(basicInfoRef, projectMemberRef.value.table.tableData)
+    doValidate().then((params) => {
+        createProject(params).then(() => {
+            ElMessage.success('新增成功！')
+            router.push('/project')
+        })
+    })
 }
 
 </script>

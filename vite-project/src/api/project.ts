@@ -42,3 +42,16 @@ export function getArchiveProjectListByPage(params:SearchProjectParams) {
     method: 'get'
   })
 }
+
+/**
+ * 创建项目
+ * @param {Object} oParams 参数
+ * @return {Promise}
+ */
+ export function createProject(oParams) {
+  return request({
+    url: ELN_PREFIX + '/project/add',
+    method: 'post',
+    data: oParams
+  })
+}

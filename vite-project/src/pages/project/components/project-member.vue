@@ -19,7 +19,7 @@
 <script setup lang="tsx">
 import { Fragment } from "vue"
 import CustomTable from '@/components/custom-table/index.vue'
-import { RenderRowData } from "element-plus";
+import { ElMessage, RenderRowData } from "element-plus";
 import { User, Delete } from '@element-plus/icons-vue'
 import UserSelect from '@/components/user-choose/user-select.vue'
 import { getProjectRoleList } from '@/api/project'
@@ -119,8 +119,18 @@ const clearAllUser = (index: number) => {
     table.tableData[index].users = []
 }
 
+// 验证必填
+const doValidate = () => {
+    let requiredEmpty = table.tableData.find(item => item.isCheck && (!(item.users || item.users.length)))
+    if(requiredEmpty) {
+        ElMessage.error('项目角色有必填岗位人员未配置，请进行配置！')
+    }
+    return !requiredEmpty
+}
+
 defineExpose({
-    table
+    table,
+    doValidate
 })
 
 </script>

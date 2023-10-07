@@ -74,8 +74,8 @@
 </template>
 
 <script setup lang="tsx">
-import { reactive } from "vue"
-import type { FormRules, CascaderValue } from 'element-plus'
+import { reactive, ref } from "vue"
+import type { FormRules, CascaderValue, FormInstance } from 'element-plus'
 import useOptions from './useOptions'
 
 const options = useOptions()
@@ -121,8 +121,16 @@ const changeDepartment = (_value: CascaderValue) => {
     }
 }
 
+// 验证必填
+const basicform = ref<FormInstance>()
+const doValidate = async () => {
+    const res = await basicform.value.validate()
+    return res
+}
+
 defineExpose({
-    basicInfoForm
+    basicInfoForm,
+    doValidate
 })
 
 </script>
