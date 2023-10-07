@@ -17,7 +17,7 @@
           </div>
         </div>
       </div>
-      <div class="table">
+      <div class="table" v-loading="loading">
         <CustomTable
           :columns="columns" 
           :data="tableData" 
@@ -35,8 +35,8 @@
 
 <script setup lang="tsx">
 import CustomTable from '@/components/custom-table/index.vue'
-import { getProjectListByPage, getArchiveProjectListByPage } from '@/api/project'
-import type { RenderRowData } from 'element-plus'
+import { getProjectListByPage, getArchiveProjectListByPage, archiveAndProject, renewAndProject } from '@/api/project'
+import { ElMessage, RenderRowData } from 'element-plus'
 import { Fragment } from 'vue';
 import {useRouter} from 'vue-router';
 
@@ -166,10 +166,29 @@ const columns = reactive([
             activeTab.value === 0 ?
             <Fragment>
               <el-button type="primary" link disabled={!scope.row.canEdit} onClick={() => operateProject(scope.row, 2)}>编辑</el-button>
-              <el-button type="primary" link disabled={scope.row.canArchive}>结束</el-button>
+              <el-popconfirm
+                width="220" 
+                confirm-button-text="确定"
+                cancel-button-text="取消"
+                onConfirm={() => operateProject(scope.row, 3)}
+                title="请确认是否将此项目完结">
+                {{
+                  reference: () => <el-button type="primary" link disabled={!scope.row.canArchive}>结束</el-button>
+                }}
+              </el-popconfirm>
             </Fragment>
               :
-            <el-button type="primary" link disabled={scope.row.canRenew}>恢复</el-button>
+              <el-popconfirm
+                width="220" 
+                confirm-button-text="确定"
+                cancel-button-text="取消"
+                onConfirm={() => operateProject(scope.row, 4)}
+                title="请确认是否将此项目恢复">
+                {{
+                  reference: () => <el-button type="primary" link disabled={!scope.row.canRenew}>恢复</el-button>
+                }}
+              </el-popconfirm>
+            
           }
         </div>
       )
@@ -178,14 +197,17 @@ const columns = reactive([
 ])
 const tableData = ref([])
 const total = ref(0)
+const loading = ref(false)
 
 const getTableData = async () => {
+  loading.value = true
   let func = activeTab.value === 0 ? getProjectListByPage : getArchiveProjectListByPage
   const { code, result } = await func(searchParams)
   if(code === 0) {
     tableData.value = result.list || []
     total.value = Number(result.total) || 0
   }
+  loading.value = false
 }
 const search = () => {
   searchParams.pageIndex = 1
@@ -212,13 +234,37 @@ const addProject = () => {
   router.push('/project/add')
 }
 // 查看、编辑项目 type 1:查看 2：编辑
-const operateProject = (row, type) => {
+const operateProject = async (row, type) => {
   switch(type) {
     case 1:
       router.push(`/project/add?id=${row.id}&type=${type}`)
       break;
     case 2:
       router.push(`/project/add?id=${row.id}&type=${type}`)
+      break;
+    case 3:
+      const res = await archiveAndProject({
+        id: row.id
+      })
+      if(res.code === 0) {
+        ElMessage.success('项目归档成功！')
+        searchParams.keywords = ''
+        search()
+      }else {
+        ElMessage.error(res.expandMsg)
+      }
+      break;
+    case 4:
+      const res1 = await renewAndProject({
+        id: row.id
+      })
+      if(res1.code === 0) {
+        ElMessage.success('项目恢复成功！')
+        searchParams.keywords = ''
+        search()
+      }else {
+        ElMessage.error(res1.expandMsg)
+      }
       break;
     default:
       break;

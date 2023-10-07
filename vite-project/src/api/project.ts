@@ -90,3 +90,31 @@ export function getArchiveProjectListByPage(params:SearchProjectParams) {
     data: oParams
   })
 }
+/**
+ * ELN基础项目管理   完成并存档项目
+ * @param {Array} aParams 参数
+ * @return {Promise}
+ */
+ export function archiveAndProject(aParams: {
+  id: string
+ }) {
+  return request({
+    url: ELN_PREFIX + '/project/archive',
+    method: 'put',
+    data: [aParams]
+  })
+}
+/**
+ * ELN基础项目管理   恢复项目
+ * @param {Array} aParams 参数
+ * @return {Promise}
+ */
+ export function renewAndProject(aParams: {
+  id: string
+ }) {
+  return request({
+    url: ELN_PREFIX + '/project/renew',
+    method: 'put',
+    data: [aParams]
+  })
+}
