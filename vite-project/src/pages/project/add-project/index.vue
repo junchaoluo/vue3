@@ -2,10 +2,10 @@
   <div class="add-project-container">
     <div class="content" :style="{ height: type !== '1'? 'calc(100vh - 120px)' : `calc(100vh - 72px)` }">
         <div class="basic-info">
-            <BasicInfo ref="basicInfoRef" :id="id" :type="type" />
+            <BasicInfo ref="basicInfoRef" />
         </div>
         <div class="project-member">
-            <ProjectMember ref="projectMemberRef" :id="id" :type="type" />
+            <ProjectMember ref="projectMemberRef" />
         </div>
     </div>
     <div class="operation" v-if="type !== '1'">
