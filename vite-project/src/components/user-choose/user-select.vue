@@ -2,7 +2,7 @@
   <div class="user-select-container">
     <el-select
         v-model="userList"
-        multiple
+        :multiple="multiple"
         :placeholder="placeholder"
         :remote="true"
         :loading="loading"
@@ -32,11 +32,13 @@ const {userData, loading, remoteMethod, defaultUsers} = useSelectUser()
 
 interface Props {
     placeholder?: string,
+    multiple?: boolean,
     users: Array<any>
 }
 
 const props = withDefaults(defineProps<Props>(),{
     placeholder: '请选择用户',
+    multiple: true,
     users: () => []
 })
 const { placeholder, users } = toRefs(props)

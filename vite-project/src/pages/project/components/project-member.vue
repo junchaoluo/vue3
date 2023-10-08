@@ -11,7 +11,7 @@
             <CustomTable :columns="table.columns" :data="table.tableData" :show-page="false"/>
         </div>
         <!-- 选择人员组件 -->
-        <UserChoose :visible="selectUserModal" :choose-type="3" :checked-user="editRowSelectUser" :is-single="false" @close="closeChooseUser" @confirm="confirmChooseUser"/>
+        <UserChoose v-if="selectUserModal" :visible="selectUserModal" :choose-type="3" :checked-user="editRowSelectUser" :is-single="false" @close="closeChooseUser" @confirm="confirmChooseUser"/>
     </el-card>
   </div>
 </template>

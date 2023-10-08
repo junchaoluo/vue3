@@ -139,7 +139,6 @@ const getUserData = async (id: string) => {
 }
 
 watch([visible, checkedUser], ([newVisible, newCheckedUser], [oldVisible, oldCheckedUser]) => {
-  console.log(newVisible, newCheckedUser, oldVisible, oldCheckedUser)
   dialogVisible.value = newVisible
   checkedUserList.value = newCheckedUser
   getDeptTreeData()
