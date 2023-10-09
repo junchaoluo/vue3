@@ -2,7 +2,7 @@
   <div class="type-container">
     <div class="module">
       <div class="header" ref="top">
-        <el-button type="primary">
+        <el-button type="primary" @click="addType(1)">
           <el-icon><Plus /></el-icon>
           新增类型
         </el-button>
@@ -10,7 +10,7 @@
       <div class="table" v-loading="loading">
         <CustomTable 
           :data="table.tableData" 
-          :columns="table.columns" 
+          :columns="columns" 
           :show-page="showPage"
           :page-num="searchParams.pageNum"
           :page-size="searchParams.pageSize"
@@ -35,104 +35,27 @@ export default {
     CustomTable
   },
   setup(props, { attrs, emit, slots, expose }) {
-    // 删除
-    const handleDelete = (oEvent, row) => {
-      oEvent.stopPropagation()
-      oEvent.preventDefault()
-    }
-    // 编辑
-    const handleEdit = (oEvent, row) => {
-      oEvent.stopPropagation()
-      oEvent.preventDefault()
-    }
-
-    const table = reactive({
-      total: 0,
-      tableData: [{}],
-      columns: [
-        {
-          label: '类型名称',
-          prop: 'name',
-          render: (scope: RenderRowData<any>) => {
-            return <span>{scope.row.name}</span>
-          },
-          fixed: 'left',
-          align: 'center',
-          minWidth: 208
-        },
-        {
-          label: '编号',
-          prop: 'code',
-          align: 'center',
-          minWidth: 208
-        },
-        {
-          label: '记录维度',
-          prop: 'recordDimensionName',
-          align: 'center',
-          minWidth: 208
-        },
-        {
-          label: '更新人',
-          prop: 'updateUser',
-          align: 'center',
-          minWidth: 144
-        },
-        {
-          label: '更新时间',
-          prop: 'updateTime',
-          align: 'center',
-          minWidth: 208
-        },
-        {
-          label: '操作',
-          width: 160,
-          render: (scope: RenderRowData<any>) => {
-            return (
-              <div>
-                <el-button
-                  type="text"
-                  onClick={oEvent => {
-                    this.handleDelete(oEvent, scope.row)
-                  }}
-                >
-                  {'删除'}{' '}
-                </el-button>
-                <el-button
-                  type="text"
-                  onClick={oEvent => {
-                    this.handleEdit(oEvent, scope.row)
-                  }}
-                >
-                  {' '}
-                  {'编辑'}{' '}
-                </el-button>
-              </div>
-            )
-          }
-        }
-      ],
-    })
     const searchParams = reactive({
       pageNum: 1,
       pageSize: 10,
       keywords: ''
     })
+    const table = reactive({
+      total: 0,
+      tableData: []
+    })
     const loading = ref(false)
-    const tableHeight = ref<string>('calc(100vh - 216px)')
-    const showPage = ref(true)
-
     const getTableData = async () => {
+      loading.value = true
       const {result} = await getExperimentClassification(searchParams)
       table.total = result?.total - 0 || 0
       table.tableData = result?.list || []
+      loading.value = false
     }
     const search = () => {
       searchParams.pageNum = 1
       getTableData()
     }
-    search()
-
     const handleSizeChange = (pageSize: number) => {
       searchParams.pageNum = pageSize
       getTableData()
@@ -142,8 +65,100 @@ export default {
       getTableData()
     }
 
+    const dialogVisible = ref(false)
+    const type = ref(1) // 1:新增 2：编辑
+    // 新增
+    const addType = () => {
+      type.value = 1
+      dialogVisible.value = true
+    }
+    const editRowData = ref({})
+    // 编辑
+    const handleEdit = (oEvent, row) => {
+      oEvent.stopPropagation()
+      oEvent.preventDefault()
+      type.value = 2
+      editRowData.value = row
+      dialogVisible.value = true
+    }
+    // 删除
+    const handleDelete = (oEvent, row) => {
+      oEvent.stopPropagation()
+      oEvent.preventDefault()
+      search()
+    }
+    const columns = reactive([
+      {
+        label: '类型名称',
+        prop: 'name',
+        render: (scope: RenderRowData<any>) => {
+          return <span>{scope.row.name}</span>
+        },
+        fixed: 'left',
+        align: 'center',
+        minWidth: 208
+      },
+      {
+        label: '编号',
+        prop: 'code',
+        align: 'center',
+        minWidth: 208
+      },
+      {
+        label: '记录维度',
+        prop: 'recordDimensionName',
+        align: 'center',
+        minWidth: 208
+      },
+      {
+        label: '更新人',
+        prop: 'updateUser',
+        align: 'center',
+        minWidth: 144
+      },
+      {
+        label: '更新时间',
+        prop: 'updateTime',
+        align: 'center',
+        minWidth: 208
+      },
+      {
+        label: '操作',
+        width: 160,
+        render: (scope: RenderRowData<any>) => {
+          return (
+            <div>
+              <el-button
+                type="text"
+                onClick={oEvent => {
+                  handleDelete(oEvent, scope.row)
+                }}
+              >
+                {'删除'}{' '}
+              </el-button>
+              <el-button
+                type="text"
+                onClick={oEvent => {
+                  handleEdit(oEvent, scope.row)
+                }}
+              >
+                {' '}
+                {'编辑'}{' '}
+              </el-button>
+            </div>
+          )
+        }
+      }
+    ])
+    
+    const tableHeight = ref<string>('calc(100vh - 216px)')
+    const showPage = ref(true)
+
+    search()
+
     return {
       table,
+      columns,
       searchParams,
       showPage,
       tableHeight,
