@@ -2,7 +2,7 @@
   <div class="type-container">
     <div class="module">
       <div class="header" ref="top">
-        <el-button type="primary" @click="addType(1)">
+        <el-button type="primary" @click="addType()">
           <el-icon><Plus /></el-icon>
           新增类型
         </el-button>
@@ -20,19 +20,27 @@
           @handleCurrentChange="handleCurrentChange" />
       </div>
     </div>
+    <SaveContent 
+      v-if="dialogVisible" 
+      :dialogVisible="dialogVisible" 
+      :type="editData.type" 
+      :editRowData="editData.rowData"
+      @close="close"/>
   </div>
 </template>
 
 <script lang="tsx">
 import { Plus } from '@element-plus/icons-vue'
 import CustomTable from '@/components/custom-table/index.vue'
-import { getExperimentClassification } from '@/api/type'
+import { getExperimentClassification, deleteExperimentClassification } from '@/api/type'
+import SaveContent from './save-content.vue'
 
 export default {
   name: 'type',
   components: {
     Plus,
-    CustomTable
+    CustomTable,
+    SaveContent
   },
   setup(props, { attrs, emit, slots, expose }) {
     const searchParams = reactive({
@@ -66,26 +74,41 @@ export default {
     }
 
     const dialogVisible = ref(false)
-    const type = ref(1) // 1:新增 2：编辑
+    // const type = ref(1) // 1:新增 2：编辑
+    const editData = reactive({
+      rowData: {},
+      type: 1 // 1:新增 2：编辑
+    })
     // 新增
     const addType = () => {
-      type.value = 1
+      editData.type = 1
+      editData.rowData = {}
       dialogVisible.value = true
     }
-    const editRowData = ref({})
     // 编辑
     const handleEdit = (oEvent, row) => {
       oEvent.stopPropagation()
       oEvent.preventDefault()
-      type.value = 2
-      editRowData.value = row
+      editData.type = 2
+      editData.rowData = row
       dialogVisible.value = true
     }
+    // 弹窗关闭
+    const close = () => {
+      dialogVisible.value = false
+      search()
+    }
+
     // 删除
-    const handleDelete = (oEvent, row) => {
+    const handleDelete = async (oEvent, row) => {
       oEvent.stopPropagation()
       oEvent.preventDefault()
-      search()
+      const { code } = await deleteExperimentClassification({
+        list: [row.id]
+      })
+      if(code === 0) {
+        search()
+      }
     }
     const columns = reactive([
       {
@@ -134,7 +157,7 @@ export default {
                   handleDelete(oEvent, scope.row)
                 }}
               >
-                {'删除'}{' '}
+                删除
               </el-button>
               <el-button
                 type="text"
@@ -142,8 +165,7 @@ export default {
                   handleEdit(oEvent, scope.row)
                 }}
               >
-                {' '}
-                {'编辑'}{' '}
+                编辑
               </el-button>
             </div>
           )
@@ -164,7 +186,11 @@ export default {
       tableHeight,
       loading,
       handleSizeChange,
-      handleCurrentChange
+      handleCurrentChange,
+      addType,
+      dialogVisible,
+      editData,
+      close
     }
   }
 }
